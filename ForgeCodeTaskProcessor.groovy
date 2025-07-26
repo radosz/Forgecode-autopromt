@@ -49,7 +49,7 @@ class ForgeCodeTaskProcessorImpl {
                 println("DONE WITH ALL TASKS")
                 if (!alreadyPrinted.getAndSet(true)) {
                     println captureTmuxPane()
-                    System.exit(0);
+                    System.exit(0)
                 }
                 return false
             }

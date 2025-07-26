@@ -61,9 +61,10 @@ def parseTasks(tasksFile) {
 
 // Check arguments
 if (args.length == 0) {
-    println "Usage: groovy forgecodeauto.groovy [-save-session] \u003ctasks_file\u003e"
+    println "Usage: groovy forgecodeauto.groovy [-save-session] [-attach=session_id] <tasks_file>"
     println "Example: groovy forgecodeauto.groovy /Users/radoslav/Projects/test-forgeauto/promts.txt"
     println "Example: groovy forgecodeauto.groovy -save-session /Users/radoslav/Projects/test-forgeauto/promts.txt"
+    println "Example: groovy forgecodeauto.groovy -attach=mysession /Users/radoslav/Projects/test-forgeauto/promts.txt"
     System.exit(1)
 }
 
@@ -71,13 +72,16 @@ try {
     // Create forge.yaml configuration first
     createForgeConfig()
     
-    // Parse -save-session flag
+// Parse command line flags
     def saveSessionFlag = false
+    def attachSessionId = null
     def filteredArgs = []
     
-    args.each { arg ->
+    args.each { arg -> 
         if (arg == "-save-session") {
             saveSessionFlag = true
+        } else if (arg.startsWith("-attach=")) {
+            attachSessionId = arg.substring(8) // Remove "-attach=" prefix
         } else {
             filteredArgs << arg
         }
@@ -85,7 +89,7 @@ try {
     
     if (filteredArgs.isEmpty()) {
         println "Error: No tasks file specified!"
-        println "Usage: groovy forgecodeauto.groovy [-save-session] \u003ctasks_file\u003e"
+        println "Usage: groovy forgecodeauto.groovy [-save-session] [-attach=session_id] <tasks_file>"
         System.exit(1)
     }
     
@@ -93,7 +97,9 @@ try {
     def tasksFile = filteredArgs[0]
     def taskLines = parseTasks(tasksFile)
 
-    def runner = new TmuxRunnerImpl(FORGECODE_COMMAND, "forgecode")
+    def runner = attachSessionId ?
+        new TmuxRunnerImpl(FORGECODE_COMMAND, "forgecode", attachSessionId) :
+        new TmuxRunnerImpl(FORGECODE_COMMAND, "forgecode")
     println "TmuxRunner loaded successfully: ${runner.class.name}"
     
     // Configure save-session behavior using closure to override killTmuxSession method
