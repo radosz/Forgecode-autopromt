@@ -61,8 +61,9 @@ def parseTasks(tasksFile) {
 
 // Check arguments
 if (args.length == 0) {
-    println "Usage: groovy forgecodeauto.groovy <tasks_file>"
+    println "Usage: groovy forgecodeauto.groovy [-save-session] \u003ctasks_file\u003e"
     println "Example: groovy forgecodeauto.groovy /Users/radoslav/Projects/test-forgeauto/promts.txt"
+    println "Example: groovy forgecodeauto.groovy -save-session /Users/radoslav/Projects/test-forgeauto/promts.txt"
     System.exit(1)
 }
 
@@ -70,14 +71,42 @@ try {
     // Create forge.yaml configuration first
     createForgeConfig()
     
-    // Parse tasks
-    def tasksFile = args[0]
-    def taskLines = parseTasks(tasksFile)
+    // Parse -save-session flag
+    def saveSessionFlag = false
+    def filteredArgs = []
     
-    // Create TmuxRunner instance from JitPack dependency
-    println "Initializing TmuxRunner from JitPack dependency..."
+    args.each { arg ->
+        if (arg == "-save-session") {
+            saveSessionFlag = true
+        } else {
+            filteredArgs << arg
+        }
+    }
+    
+    if (filteredArgs.isEmpty()) {
+        println "Error: No tasks file specified!"
+        println "Usage: groovy forgecodeauto.groovy [-save-session] \u003ctasks_file\u003e"
+        System.exit(1)
+    }
+    
+    // Parse tasks
+    def tasksFile = filteredArgs[0]
+    def taskLines = parseTasks(tasksFile)
+
     def runner = new TmuxRunnerImpl(FORGECODE_COMMAND, "forgecode")
     println "TmuxRunner loaded successfully: ${runner.class.name}"
+    
+    // Configure save-session behavior using closure to override killTmuxSession method
+    if (saveSessionFlag) {
+        println "Save-session flag detected - tmux session will be preserved after completion"
+        // Override the killTmuxSession method using metaclass to prevent session termination
+        runner.metaClass.killTmuxSession = {
+            println "Session preservation enabled - skipping tmux session termination"
+            println "Tmux session '${runner.sessionName}' is still running"
+            println "To manually kill the session later, run: tmux kill-session -t ${runner.sessionName}"
+            return 0 // Return success code without actually killing the session
+        }
+    }
     
     // Get the directory where this script is located
     def scriptFile = new File(getClass().protectionDomain.codeSource.location.toURI())
