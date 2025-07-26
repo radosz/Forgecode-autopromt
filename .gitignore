@@ -1,0 +1,34 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+*.ids
+*.orig
+classes/
+out/
+
+# IntelliJ IDEA - File-based project format
+*.iws
+
+# IntelliJ IDEA - Plugin-specific files
+.idea_modules/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+# Crashlytics plugin (for Android Studio and IntelliJ)
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+
+# Compiled files
+target/
+*.class
+
+# Logs
+*.log
+
+# Mac OS specific
+.DS_Store
