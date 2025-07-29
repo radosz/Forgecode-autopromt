@@ -94,6 +94,7 @@ try {
         if (arg == "-save-session") {
             saveSessionFlag = true
         } else if (arg.startsWith("-attach=")) {
+            saveSessionFlag = true
             attachSessionId = arg.substring(8) // Remove "-attach=" prefix
         } else {
             filteredArgs << arg
