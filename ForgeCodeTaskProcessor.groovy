@@ -41,7 +41,7 @@ class ForgeCodeTaskProcessorImpl {
                 println "=============================="
                 println "$task"
                 println "=============================="
-                sendTaskToTmux(task)
+                sendTaskToTmux(task.replaceAll("\n", "  ")) //new line is not acceptable for forge
                 taskNumb.incrementAndGet()
                 return true
 

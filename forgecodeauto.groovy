@@ -35,26 +35,39 @@ def createForgeConfig() {
     println "Created/updated forge.yaml in ${System.getProperty('user.dir')}"
 }
 
-// Parse tasks from file
+@SuppressWarnings('GroovyUnusedAssignment')
 def parseTasks(tasksFile) {
     def taskFile = new File(tasksFile)
     if (!taskFile.exists()) {
         throw new FileNotFoundException("Tasks file '${tasksFile}' does not exist!")
     }
-    
+
     def fileContent = taskFile.text
-    def taskLinesList = fileContent.split(TASK_DELIMITER)
+    def blocks = fileContent.split(TASK_DELIMITER)
         .collect { it.trim() }
-        .findAll { it && !it.isEmpty() }
-    
-    if (taskLinesList.isEmpty()) {
+        .findAll { it }
+
+    if (blocks.isEmpty()) {
         throw new IllegalArgumentException("No valid tasks found in '${tasksFile}'!")
     }
-    
-    // Convert to Stack (LIFO) - reverse order so first task is at top
+
+    def pre = ""
+    if (blocks[0].startsWith("=PRE=")) {
+        pre = blocks[0].substring(5).trim()
+        blocks = blocks.drop(1)
+    }
+
+    def tasks = []
+    if (pre) {
+        tasks = blocks.collect { "${pre}\n${it}" }
+    } else {
+        tasks = blocks
+    }
+
+    // Stack (LIFO) - reverse order so first task is at top
     def taskLines = new Stack()
-    taskLinesList.reverse().each { taskLines.push(it) }
-    
+    tasks.reverse().each { taskLines.push(it) }
+
     println "Parsed ${taskLines.size()} tasks from '${tasksFile}'"
     return taskLines
 }
