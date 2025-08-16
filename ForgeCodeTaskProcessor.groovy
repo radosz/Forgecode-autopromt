@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class ForgeCodeTaskProcessorImpl {
 
     final String PROMPT_PREFIX = "❯"
+    final String ACCEPT_PERM = "[Use arrow keys to navigate, Enter to select, ESC to cancel]"
 
     /**
      * Process the captured tmux pane output and handle task execution
@@ -33,6 +34,9 @@ class ForgeCodeTaskProcessorImpl {
                 sendKeysToTmux("y", "Enter")
         }
 
+        if (lastLine.startsWith(ACCEPT_PERM)) {
+            sendKeysToTmux("Enter")
+        }
 
         if (lastLine.startsWith(PROMPT_PREFIX)) {
             if (taskLines.size() > 0) {

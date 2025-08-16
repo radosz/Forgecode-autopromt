@@ -15,8 +15,7 @@ import groovy.transform.Field
 
 // === FORGE CONFIGURATION - Easy to edit ===
 @Field forgeConfig = '''\
-model: anthropic/claude-sonnet-4
-max_walker_depth: 1
+max_walker_depth: 10
 top_p: 0.8
 top_k: 30
 max_tokens: 20480
