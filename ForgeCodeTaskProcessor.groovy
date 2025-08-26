@@ -10,6 +10,7 @@ class ForgeCodeTaskProcessorImpl {
 
     final String PROMPT_PREFIX = "❯"
     final String ACCEPT_PERM = "[Use arrow keys to navigate, Enter to select, ESC to cancel]"
+    final String CONTINUE_CONV="? Start a new conversation? (Y/n)"
 
     /**
      * Process the captured tmux pane output and handle task execution
@@ -50,6 +51,9 @@ class ForgeCodeTaskProcessorImpl {
                 return true
 
             }
+        }
+        if (lastLine.startsWith(CONTINUE_CONV)) {
+            sendKeysToTmux("n", "Enter") 
         }
         return true // Continue processing
     }
